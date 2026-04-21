@@ -1,0 +1,131 @@
+html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kaito GX - Liquid Proxy</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Poppins:wght@300;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --accent: #ff003c;
+            --main-dark: #0b0b0e;
+            --glass: rgba(255, 255, 255, 0.05);
+            --liquid: rgba(255, 255, 255, 0.1);
+        }
+
+        * { box-sizing: border-box; }
+        body, html { 
+            margin: 0; padding: 0; height: 100%; 
+            background: #000; font-family: 'Poppins', sans-serif;
+            overflow: hidden;
+        }
+
+        #bg {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            z-index: -1; background: url('https://w.wallhaven.cc/full/pk/wallhaven-pkvp9p.jpg') center/cover;
+            transition: 0.5s; filter: brightness(0.5) blur(2px);
+        }
+
+        .shell {
+            display: grid; grid-template-columns: 70px 1fr; height: 100vh;
+        }
+
+        .sidebar {
+            background: rgba(0,0,0,0.85); border-right: 1px solid var(--accent);
+            display: flex; flex-direction: column; align-items: center; padding: 20px 0; gap: 20px;
+        }
+
+        .btn {
+            width: 45px; height: 45px; border-radius: 12px; background: var(--glass);
+            border: 1px solid var(--liquid); cursor: pointer;
+            transition: 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .btn:hover { transform: scale(1.2); border-color: var(--accent); box-shadow: 0 0 15px var(--accent); }
+
+        .main { display: flex; flex-direction: column; overflow: hidden; }
+
+        .tabs {
+            background: var(--main-dark); height: 45px; display: flex; align-items: flex-end; padding: 0 10px; gap: 5px;
+        }
+
+        .tab {
+            background: var(--glass); color: white; padding: 8px 15px; border-radius: 10px 10px 0 0;
+            font-size: 11px; border: 1px solid var(--liquid); border-bottom: none;
+            min-width: 120px; text-transform: uppercase; letter-spacing: 1px;
+            animation: bounceIn 0.5s ease;
+        }
+
+        .tab.active { background: var(--accent); color: white; font-weight: bold; }
+
+        .nav-bar {
+            background: #141417; padding: 8px 20px; display: flex; gap: 15px; border-bottom: 1px solid #333;
+        }
+
+        input {
+            flex: 1; background: #000; border: 1px solid #222; color: var(--accent);
+            padding: 8px 20px; border-radius: 20px; outline: none; font-family: 'Orbitron';
+        }
+
+        .view-container {
+            flex: 1; margin: 15px; border-radius: 20px; 
+            background: var(--liquid); backdrop-filter: blur(20px);
+            border: 1px solid var(--liquid); position: relative;
+            animation: bounceIn 0.8s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            overflow: hidden;
+        }
+
+        iframe { width: 100%; height: 100%; border: none; }
+
+        @keyframes bounceIn {
+            0% { transform: scale(0.9); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        .settings { margin-top: auto; }
+    </style>
+</head>
+<body>
+    <div id="bg"></div>
+    <div class="shell">
+        <div class="sidebar">
+            <div class="btn"></div>
+            <div class="btn"></div>
+            <div class="btn settings" onclick="setBg()"></div>
+        </div>
+        <div class="main">
+            <div class="tabs">
+                <div class="tab active" id="tab-title">New Tab</div>
+                <div class="tab" style="min-width:40px">+</div>
+            </div>
+            <div class="nav-bar">
+                <input type="text" id="url" placeholder="ENTER URL..." onkeydown="if(event.key==='Enter') load()">
+            </div>
+            <div class="view-container">
+                <iframe id="frame"></iframe>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function load() {
+            let val = document.getElementById('url').value;
+            if(!val) return;
+            if (!val.startsWith('http')) val = 'https://' + val;
+            document.getElementById('tab-title').innerText = val.split('/')[2];
+            document.getElementById('frame').src = "https://api.allorigins.win/raw?url=" + encodeURIComponent(val);
+            
+            const cont = document.querySelector('.view-container');
+            cont.style.animation = 'none';
+            void cont.offsetWidth;
+            cont.style.animation = 'bounceIn 0.8s cubic-bezier(0.68, -0.55, 0.265, 1.55)';
+        }
+
+        function setBg() {
+            const img = prompt("Wallpaper URL:");
+            if(img) document.getElementById('bg').style.backgroundImage = `url('${img}')`;
+        }
+    </script>
+</body>
+</html>
